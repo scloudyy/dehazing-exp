@@ -1,5 +1,0 @@
-input = imread('1.bmp');
-input = im2double(input);
-darkchannel = calcDarkChannel(input);
-A = calcAirLight();
-roughTrans = calcTransmission(input, A);
