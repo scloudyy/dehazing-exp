@@ -3,7 +3,7 @@ function [roughTans] = calcTransmission(inputimg, A)
 %
     [height, width] = size(inputimg);
     width = width / 3;
-    trans = zeros(height, width);
+    trans(1:height,1:width) = -1;
     gray = rgb2gray(inputimg);
     edges = edge(gray, 'canny');
     for i = 4:3:height-4
@@ -32,9 +32,13 @@ end
 function [x] = calcT(D, V, A)
     vecD = [D(:,:,1) D(:,:,2) D(:,:,3)];
     vecV = [V(:,:,1) V(:,:,2) V(:,:,3)];
-    matA = [norm(vecD) -dot(A,vecD); -dot(A,vecD) norm(A)];
+    matA = [norm(vecD)^2 -dot(A,vecD); -dot(A,vecD) norm(A)^2];
     matB = [-dot(vecD,vecV); dot(A,vecV)];
-    x = matA \ matB;
+    x = bicg(matA, matB);
+    %x = matA \ matB;
+    %matA = [1 dot(A,vecD); dot(A,vecD) 1];
+    %matB = [-dot(vecD, vecV); dot(A, vecV)];
+    %x = matA * matB / (1 - dot(vecD, A)^2);
 end
 
 function [isValid] = calcValid(D, V, A, x, p, mask)
@@ -55,7 +59,7 @@ if dis > 0.6
     return;
 end
 
-vecVar = [];
+vecVar = [];  %Sufficient Shading Variability
 for i = 1:1:7
     for j = 1:1:7
         if mask(i, j) == 1

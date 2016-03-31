@@ -13,8 +13,14 @@ while times <= 30
     x2 = p(y, x, :);
 
     tmpD = x2 - x1;
+    
+    if tmpD(:,:,1) < 0 || tmpD(:,:,2) <0 || tmpD(:,:,3) <0  %Positive Reflectance
+        continue;
+    end
+    
     vectmpD = [tmpD(:,:,1) tmpD(:,:,2) tmpD(:,:,3)];
-    if norm(vectmpD, 1) == 0
+    
+    if norm(vectmpD) == 0
         times = times + 0.5;
         continue;
     end
@@ -42,15 +48,12 @@ while times <= 30
     times = times + 1;
 end
 
-if sum(sum(mask)) < 0.6*7*7
+if sum(sum(mask)) < 0.6*7*7  %Significant Line Support
     mask = zeros(7,7);
+    return;
 end
 
-if D(:,:,1) < 0 || D(:,:,2) <0 || D(:,:,3) <0
-    mask = zeros(7,7);
-end
-
-vecD = [D(:,:,1) D(:,:,2) <0 D(:,:,3)];
+vecD = [D(:,:,1) D(:,:,2) D(:,:,3)];  %Large intersection angle
 cos = dot(vecD, A)/norm(vecD)/norm(A);
 theta = rad2deg(cos);
 if theta < 15
