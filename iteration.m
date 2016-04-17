@@ -5,6 +5,8 @@ function [transmission] = iteration(trans, input)
     X = bicg(A, B);
     n = 1;
     transmission = trans;
+    [height, width] = size(input);
+    width = width / 3;
     for i = 1:1:height
         for j = 1:1:width
             if trans(i, j) == -1
