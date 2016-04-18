@@ -1,81 +1,54 @@
 function [D, V, mask] = calcColorLine(p, A)
 %
 %
-maxVote = -1;
-times = 0;
-while times <= 30
-    x = floor(1 + (7 - 1) * rand(1, 1));
-    y = floor(1 + (7 - 1) * rand(1, 1));
-    x1 = p(y, x, :);
+    maxVote = -1;
+    times = 0;
+    while times <= 30
+        x1 = floor(1 + (7 - 1) * rand(1, 1));
+        y1 = floor(1 + (7 - 1) * rand(1, 1));
 
-    x = floor(1 + (7 - 1) * rand(1, 1));
-    y = floor(1 + (7 - 1) * rand(1, 1));
-    x2 = p(y, x, :);
+        x2 = floor(1 + (7 - 1) * rand(1, 1));
+        y2 = floor(1 + (7 - 1) * rand(1, 1));
 
-    tmpD = x2 - x1;
-    
-    if tmpD(:,:,1) < 0 || tmpD(:,:,2) <0 || tmpD(:,:,3) <0  %Positive Reflectance
-        continue;
-    end
-    
-    vectmpD = [tmpD(:,:,1) tmpD(:,:,2) tmpD(:,:,3)];
-    
-    if norm(vectmpD) == 0
-        times = times + 0.5;
-        continue;
-    end
-    tmpV = x1;
+        vectmpD = [p(y1,x1,1) - p(y2,x2,1), p(y1,x1,2) - p(y2,x2,2), p(y1,x1,3) - p(y2,x2,3)];
+        vectmpV = [p(y1,x1,1), p(y1,x1,2), p(y1,x1,3)];
 
-    vote = 0;
-    tmpMask = zeros(7, 7);
-    for y = 1:1:7
-        for x = 1:1:7
-            x3 = p(y, x, :);
-            flag = isVote(tmpD, tmpV, x3);
-            if flag == 1;
-                vote = vote + 1;
-                tmpMask(y, x) = 1;
+        vote = 0;
+        tmpMask = zeros(7, 7);
+        for y = 1:1:7
+            for x = 1:1:7
+                vecx3 = [p(y,x,1), p(y,x,2), p(y,x,3)];
+                flag = isVote(vectmpD, vectmpV, vecx3);
+                if flag == 1;
+                    vote = vote + 1;
+                    tmpMask(y, x) = 1;
+                end
             end
         end
+
+        if vote > maxVote
+            maxVote = vote;
+            D = vectmpD;
+            V = vectmpV;
+            mask = tmpMask;
+        end
+        times = times + 1;
     end
-
-    if vote > maxVote
-        maxVote = vote;
-        D = tmpD;
-        V = tmpV;
-        mask = tmpMask;
-    end
-    times = times + 1;
-end
-
-if sum(sum(mask)) < 0.6*7*7  %Significant Line Support
-    mask = zeros(7,7);
-    return;
-end
-
-vecD = [D(:,:,1) D(:,:,2) D(:,:,3)];  %Large intersection angle
-cos = dot(vecD, A)/norm(vecD)/norm(A);
-theta = rad2deg(cos);
-if theta < 15
-    mask = zeros(7,7);
-end
 end
 
 function [flag] = isVote(D, V, x)
-vector = x - V;
-vecvector = [vector(:,:,1),vector(:,:,2),vector(:,:,2)];
-if norm(vecvector) == 0
-    flag = 1;
-    return;
-end
-normal = D;
-vecnormal = [normal(:,:,1), normal(:,:,2), normal(:,:,3)];
-cos = dot(vecvector,vecnormal)/norm(vecvector)/norm(vecnormal);
-theta = pi / 2 - acos(cos);
-proj = norm(vecvector) * cosd(rad2deg(theta));
-if proj < 0.02
-    flag  = 1;
-else
-    flag = 0;
-end
+    vector = x - V;
+    if norm(vector) == 0
+        flag = 1;
+        return;
+    end
+    normal = D;
+    cos = dot(vector,normal)/norm(vector)/norm(normal);
+    theta = pi / 2 - acos(cos);
+    proj = norm(vector) * cosd(rad2deg(theta));
+    if proj < 0.02
+        flag  = 1;
+    else
+        flag = 0;
+    end
 end
