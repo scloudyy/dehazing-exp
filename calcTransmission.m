@@ -93,6 +93,29 @@ function [roughTans] = calcTransmission(inputimg, A)
             end
         end
     end
+
+    all_trans = all_trans * 255;
+    significant_line_support = significant_line_support * 255;
+    positive_reflectance = positive_reflectance * 255;
+    large_intersection_angle = large_intersection_angle * 255;
+    unimodality = unimodality * 255;
+    final_colorline_trans = final_colorline_trans * 255;
+    close_intersection = close_intersection * 255;
+    valid_transmission = valid_transmission * 255;
+    suffcient_shading_variability = suffcient_shading_variability * 255;
+    final_trans = final_trans * 255;
+
+    imwrite(uint8(all_trans), 'all_trans.bmp');
+    imwrite(uint8(significant_line_support), 'significant_line_support.bmp');
+    imwrite(uint8(positive_reflectance), 'positive_reflectance.bmp');
+    imwrite(uint8(large_intersection_angle), 'large_intersection_angle.bmp');
+    imwrite(uint8(unimodality), 'unimodality.bmp');
+    imwrite(uint8(final_colorline_trans), 'final_colorline_trans.bmp');
+    imwrite(uint8(close_intersection), 'close_intersection.bmp');
+    imwrite(uint8(valid_transmission), 'valid_transmission.bmp');
+    imwrite(uint8(suffcient_shading_variability), 'suffcient_shading_variability.bmp');
+    imwrite(uint8(final_trans), 'final_trans.bmp');
+
     roughTans = trans;
 end
 
