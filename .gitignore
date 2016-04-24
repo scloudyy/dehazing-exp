@@ -1,6 +1,9 @@
 *.bmp
 *.png
 *.jpg
-
+*txt
 *.asv
 *.mat
+
+/img
+/Result

@@ -1,4 +1,4 @@
-function [D, V, mask] = calcColorLine(p, A)
+function [D, V, mask] = calcColorLine(p)
 %
 %
     maxVote = -1;
@@ -10,18 +10,18 @@ function [D, V, mask] = calcColorLine(p, A)
         x2 = floor(1 + (7 - 1) * rand(1, 1));
         y2 = floor(1 + (7 - 1) * rand(1, 1));
 
-        vectmpD = [p(y1,x1,1) - p(y2,x2,1), p(y1,x1,2) - p(y2,x2,2), p(y1,x1,3) - p(y2,x2,3)];
+        vectmpD = [p(y2,x2,1) - p(y1,x1,1), p(y2,x2,2) - p(y1,x1,2), p(y2,x2,3) - p(y1,x1,3)];
         vectmpV = [p(y1,x1,1), p(y1,x1,2), p(y1,x1,3)];
 
         vote = 0;
-        tmpMask = zeros(7, 7);
+        tmpMask = zeros(7, 7, 3);
         for y = 1:1:7
             for x = 1:1:7
                 vecx3 = [p(y,x,1), p(y,x,2), p(y,x,3)];
                 flag = isVote(vectmpD, vectmpV, vecx3);
                 if flag == 1;
                     vote = vote + 1;
-                    tmpMask(y, x) = 1;
+                    tmpMask(y, x,:) = 1;
                 end
             end
         end
